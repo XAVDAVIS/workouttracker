@@ -1,0 +1,124 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Regimen Details</h1>
+
+<div class="row">
+ <div class="col s6">
+  <div class="card">
+    <div class="card-content">
+        <span class="card-title">{{ regimen.name }}</span>
+        <p>Muscle Group: {{ regimen.muscle_group }}</p>
+        <p>Description: {{ regimen.description }}</p>
+        {% if regimen.days_each_week > 0 %}
+        <p>Days Each Week: {{ regimen.days_each_week }}</p>
+        {% else %}
+        <p>Not in current split</p>
+        {% endif %}
+    </div>
+    <div class="card-action">
+        <a href="{% url 'regimens_update' regimen.id %}">Edit</a>
+        <a href="{% url 'regimens_delete' regimen.id %}">Delete</a>
+    </div>
+</div>
+<div class="show-block">
+<form action="{% url 'add_doing' regimen.id %}" method="post">
+    {% csrf_token %} {{ doing_form.as_p }}
+</div>
+    <input type="submit" class="btn" value="Mark As Done" />
+  </form>
+  <br />
+  {% if regimen.done_today %}
+  <div class="card-panel teal-text center-align">
+    {{regimen.name}} has been done today.
+  </div>
+  {% else %}
+  <div class="card-panel red-text center-align">
+    Is it time for {{regimen.name}} ?
+  </div>
+  {% endif %}
+<div class="col s6">
+ <div class="show-block">
+  <table class="striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doing in regimen.doing_set.all %}
+      <tr>
+        <td>{{doing.date}}</td>
+        <td>{{doing.get_time_display}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+<hr />
+<div class="row">
+<div class="col s6">
+  <h3>{{ regimen.name }}'s Exercises</h3>
+  {% if regimen.exercises.count %} {% for exercise in regimen.exercises.all %}
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">
+        <span style="color: black"><u>{{ exercise.name }}</u></span>
+        <br />
+        <p>Sets: {{ exercise.sets }}</p>
+        <br />
+        <p>Reps: {{ exercise.reps }}</p>
+      </span>
+    </div>
+    <div class="card-action">
+      <form action="{% url 'assoc_exercise_delete' regimen.id exercise.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn">Remove</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <h5>No Exercises Added</h5>
+  {% endif %}
+</div>
+<div class="col s6">
+  <h3>Available Exercises</h3>
+  {% if exercises.count %} {% for exercise in exercises.all %}
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">
+        <span style="color: black"><u>{{ exercise.name }}</u></span>
+        <br />
+        <p>Sets: {{ exercise.sets }}</p>
+        <br />
+        <p>Reps: {{ exercise.reps }}</p>
+      </span>
+    </div>
+    <div class="card-action">
+      <form action="{% url 'assoc_exercise' regimen.id exercise.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn">Add</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <h5>{{regimen.name}} has all exercises added</h5>
+  {% endif %}
+</div>
+
+<script>
+  var dateEl = document.getElementById("id_date");
+  M.Datepicker.init(dateEl, {
+    format: "yyyy-mm-dd",
+    defaultDate: new Date(),
+    setDefaultDate: true,
+    autoClose: true,
+  });
+
+  var selectEl = document.getElementById("id_time");
+  M.FormSelect.init(selectEl);
+</script>
+{% endblock %}
+</div>

@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Regimens List</h1>
+
+{% for regimen in regimens %}
+<div class="card">
+<a href="{% url 'detail' regimen.id %}">
+    <div class="card-content">
+        <span class="card-title">{{ regimen.name }}</span>
+        <p>Descritpion: {{ regimen.description }}</p>
+        {% if regimen.days_each_week > 0 %}
+        <p>Days Each Week: {{ regimen.days_each_week }}</p>
+        {% else %}
+        <p>Not at this time</p>
+        {% endif %} 
+    </div>
+</a>
+</div>
+{% endfor %} {% endblock %}
